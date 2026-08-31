@@ -2092,25 +2092,6 @@ function ProfilePage({ savedGoal, onOpenGoalModal, onNavigate }) {
         <div style={{ flex: 1, maxWidth: 720 }}>
           <div
             style={{
-              background: C.yellowLightest,
-              border: `1px solid ${C.yellowLight}`,
-              borderRadius: 4,
-              padding: "12px 16px",
-              marginBottom: 24,
-              display: "flex",
-              alignItems: "center",
-              gap: 10,
-              fontSize: 14,
-              color: C.ashDark,
-            }}
-          >
-            <Ic.Warning />
-            Please verify your phone number for extra security and easy sign in.{" "}
-            <span style={{ color: C.red, fontWeight: 600, cursor: "pointer" }}>Click here to verify</span>
-          </div>
-
-          <div
-            style={{
               background: C.white,
               borderRadius: 4,
               padding: 24,
