@@ -3,6 +3,7 @@ import React, { useState, useEffect, useRef } from "react";
 // Curated photo sets — 10 restaurant photos + 9 dish photos, cycled by index
 // (modulo) across every card instance rather than needing one unique photo
 // per card. See ImagePlaceholder's `src` prop below for how these get used.
+import searchMapImg from "./assets/map/search-map.jpg";
 import restaurant1 from "./assets/restaurants/restaurant_1.jpg";
 import restaurant2 from "./assets/restaurants/restaurant_2.jpg";
 import restaurant3 from "./assets/restaurants/restaurant_3.jpg";
@@ -1641,13 +1642,13 @@ const Ic = {
   Compass: ({ size = 18, color = C.ashDark }) => (
     <svg width={size} height={size} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
       <path
-        d="M3 11a8 8 0 1 1 16 0 8 8 0 0 1-16 0Zm8-10v2M11 21v2M1 11h2M19 11h2"
+        d="M4 12a8 8 0 1 1 16 0 8 8 0 0 1-16 0ZM12 1v2M12 21v2M1 12h2M21 12h2"
         fill="none"
         stroke={color}
         strokeWidth="1.6"
         strokeLinecap="round"
       />
-      <path d="m14 8-4 4 4 4 4-4Z" fill={color} />
+      <path d="m12 8-4 4 4 4 4-4Z" fill={color} />
     </svg>
   ),
   Expand: ({ size = 16, color = C.ashDark }) => (
@@ -1888,18 +1889,19 @@ function Header({ onNavigate }) {
             <span
               onClick={() => onNavigate("profile")}
               style={{
-                width: 40,
-                height: 40,
+                width: 32,
+                height: 32,
                 borderRadius: "50%",
                 background: C.avatarBlue,
                 color: C.white,
                 fontWeight: 700,
-                fontSize: 14,
+                fontSize: 12,
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
                 cursor: "pointer",
                 fontFamily: FONT,
+                flexShrink: 0,
               }}
               title="Profile"
             >
@@ -2090,25 +2092,6 @@ function ProfilePage({ savedGoal, onOpenGoalModal, onNavigate }) {
         <LeftNav activeScreen="profile" onNavigate={onNavigate} />
 
         <div style={{ flex: 1, maxWidth: 720 }}>
-          <div
-            style={{
-              background: C.yellowLightest,
-              border: `1px solid ${C.yellowLight}`,
-              borderRadius: 4,
-              padding: "12px 16px",
-              marginBottom: 24,
-              display: "flex",
-              alignItems: "center",
-              gap: 10,
-              fontSize: 14,
-              color: C.ashDark,
-            }}
-          >
-            <Ic.Warning />
-            Please verify your phone number for extra security and easy sign in.{" "}
-            <span style={{ color: C.red, fontWeight: 600, cursor: "pointer" }}>Click here to verify</span>
-          </div>
-
           <div
             style={{
               background: C.white,
@@ -2547,7 +2530,6 @@ function GoalModal({ initialGoal, onClose, onSave }) {
             marginBottom: selected?.hasFrequency ? 24 : 8,
           }}
         >
-          <Ic.Sparkle size={16} color={C.ashDark} />
           Just exploring
         </button>
 
@@ -3120,6 +3102,27 @@ function ActivityLogScreen({ savedGoal, onNavigate }) {
 
       <div style={{ maxWidth: 1280, margin: "0 auto", padding: "40px 24px", display: "flex", gap: 48 }}>
         <div style={{ flex: 1 }}>
+          {/* Back nav — Activity log is a drilldown from the Nutrition
+              Goals dashboard (reached via its "Goal activity" link), so
+              it needs a way back rather than dead-ending here. */}
+          <span
+            onClick={() => onNavigate("dashboard")}
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 4,
+              marginBottom: 12,
+              cursor: "pointer",
+              color: C.ash,
+              fontSize: 14,
+              fontWeight: 600,
+            }}
+          >
+            <span style={{ display: "flex", transform: "rotate(180deg)" }}>
+              <Ic.ChevronRight size={16} color={C.ash} />
+            </span>
+            Nutrition Goals
+          </span>
           <h1 style={{ margin: 0, ...type.titleLarge, color: C.ashDark, fontSize: 28, lineHeight: "34px" }}>
             Goal activity
           </h1>
@@ -5202,11 +5205,11 @@ function SearchResultCard({ r, goal, onNavigate, index = 0 }) {
   );
 }
 
-/* FLAGGED PLACEHOLDER — no real map integration; hatched background
-   matching the same "obvious stand-in" convention as ImagePlaceholder,
-   with hand-drawn pin icons at rough scattered positions (not tied to
-   real coordinates) and non-functional zoom/locate/expand controls
-   included only for visual completeness. */
+/* Still no real map integration — background is a static Google Maps
+   screenshot (src/assets/map/search-map.jpg) standing in for a live
+   map, with hand-drawn pin icons at rough scattered positions (not
+   tied to real coordinates) and non-functional zoom/locate/expand
+   controls included only for visual completeness. */
 function MapPlaceholder() {
   const pins = [
     { left: "30%", top: "20%" },
@@ -5246,24 +5249,11 @@ function MapPlaceholder() {
           height: "100%",
           borderRadius: 8,
           overflow: "hidden",
-          background: "repeating-linear-gradient(45deg, #e8eef0, #e8eef0 14px, #dde6e9 14px, #dde6e9 28px)",
+          backgroundImage: `url(${searchMapImg})`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
         }}
       >
-      <span
-        style={{
-          position: "absolute",
-          top: 12,
-          left: 12,
-          background: C.white,
-          padding: "6px 10px",
-          borderRadius: 4,
-          fontSize: 11,
-          color: C.ash,
-          boxShadow: "0 2px 4px rgba(45,51,63,0.2)",
-        }}
-      >
-        [map placeholder — no real map integration]
-      </span>
       {pins.map((p, i) => (
         <span key={i} style={{ position: "absolute", left: p.left, top: p.top, transform: "translate(-50%,-100%)" }}>
           <Ic.Pin size={22} />
@@ -5488,6 +5478,26 @@ function getConciergeResult(query) {
    uncertain CSS attribution. */
 function ConciergeInput({ value, onChange, onSend, placeholder, autoFocus }) {
   const canSend = value.trim().length > 0;
+  const textareaRef = useRef(null);
+  const LINE_HEIGHT = 24;
+  const MAX_LINES = 2;
+
+  // Auto-grow the textarea with its content, capped at 2 lines — only
+  // once text actually wraps past that does it start scrolling (and
+  // show scrollbar/step arrows). Previously the box was a fixed 24px
+  // (1 line) with default textarea overflow, so the browser's native
+  // scroll arrows could appear even at 0-1 lines from sub-pixel
+  // scrollHeight rounding, not just genuine 2-line overflow.
+  useEffect(() => {
+    const el = textareaRef.current;
+    if (!el) return;
+    el.style.height = "auto";
+    const maxHeight = LINE_HEIGHT * MAX_LINES;
+    const next = Math.min(el.scrollHeight, maxHeight);
+    el.style.height = `${next}px`;
+    el.style.overflowY = el.scrollHeight > maxHeight ? "auto" : "hidden";
+  }, [value]);
+
   return (
     <div
       style={{
@@ -5513,6 +5523,7 @@ function ConciergeInput({ value, onChange, onSend, placeholder, autoFocus }) {
         .concierge-input-textarea::placeholder { font-weight: 400; }
       `}</style>
       <textarea
+        ref={textareaRef}
         value={value}
         autoFocus={autoFocus}
         className="concierge-input-textarea"
@@ -5527,18 +5538,20 @@ function ConciergeInput({ value, onChange, onSend, placeholder, autoFocus }) {
         rows={1}
         style={{
           width: "100%",
-          height: 24,
+          height: LINE_HEIGHT,
           resize: "none",
           border: "none",
           margin: "12px 64px 12px 20px",
+          padding: 0,
           outline: "none",
-          lineHeight: "24px",
+          lineHeight: `${LINE_HEIGHT}px`,
           fontSize: 16,
           fontWeight: 500,
           color: C.ashDark,
           fontFamily: FONT,
           boxSizing: "border-box",
           background: "transparent",
+          overflowY: "hidden",
         }}
       />
       <button
@@ -5683,6 +5696,11 @@ function ConciergeRestaurantCard({ r, onNavigate, index = 0 }) {
 function ConciergeScreen({ initialQuery, onNavigate }) {
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(false);
+  // The just-sent query, shown immediately as its own bubble while the
+  // response is still loading — without this, the user's prompt only
+  // appeared once the (delayed) response arrived alongside it, so
+  // nothing showed on screen during "Prepping a response...".
+  const [pendingQuery, setPendingQuery] = useState(null);
   const [inputValue, setInputValue] = useState("");
   const [feedback, setFeedback] = useState({});
   const startedRef = useRef(false);
@@ -5691,11 +5709,13 @@ function ConciergeScreen({ initialQuery, onNavigate }) {
   function sendMessage(text) {
     if (!text || !text.trim()) return;
     setInputValue("");
+    setPendingQuery(text);
     setLoading(true);
     setTimeout(() => {
       const result = getConciergeResult(text);
       setMessages((prev) => [...prev, { query: text, ...result }]);
       setLoading(false);
+      setPendingQuery(null);
     }, 1800);
   }
 
@@ -5847,9 +5867,29 @@ function ConciergeScreen({ initialQuery, onNavigate }) {
               </div>
             ))}
             {loading && (
-              <div style={{ display: "flex", alignItems: "center", gap: 8, color: C.ash, padding: "8px 0" }}>
-                <ConciergeLoader size={32} />
-                <span style={{ fontSize: 14 }}>Prepping a response...</span>
+              <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+                <p
+                  style={{
+                    margin: 0,
+                    color: C.ashDark,
+                    padding: "8px 12px",
+                    borderRadius: 8,
+                    background: C.ashLightest,
+                    lineHeight: "24px",
+                    fontWeight: 400,
+                    fontSize: 16,
+                    maxWidth: "70%",
+                    width: "fit-content",
+                    alignSelf: "flex-end",
+                    wordBreak: "break-word",
+                  }}
+                >
+                  {pendingQuery}
+                </p>
+                <div style={{ display: "flex", alignItems: "center", gap: 8, color: C.ash, padding: "8px 0" }}>
+                  <ConciergeLoader size={32} />
+                  <span style={{ fontSize: 14 }}>Prepping a response...</span>
+                </div>
               </div>
             )}
           </div>
@@ -6222,36 +6262,26 @@ function BookingScreen({ savedGoal, onNavigate }) {
   const [goalAligned, setGoalAligned] = useState(null);
   const [emailOptIn, setEmailOptIn] = useState(false);
 
+  // Table-hold countdown — was static "4:56" text. Counts down from
+  // 5:00 to 0:00 once per second. State is local to this component,
+  // so it naturally starts fresh at 5:00 every time this screen
+  // mounts (first visit, or navigating away and back), with no extra
+  // reset logic needed.
+  const [secondsLeft, setSecondsLeft] = useState(300);
+  useEffect(() => {
+    if (secondsLeft <= 0) return;
+    const id = setTimeout(() => setSecondsLeft((s) => s - 1), 1000);
+    return () => clearTimeout(id);
+  }, [secondsLeft]);
+  const holdMinutes = Math.floor(secondsLeft / 60);
+  const holdSeconds = String(secondsLeft % 60).padStart(2, "0");
+
   return (
     <div style={{ fontFamily: FONT, minHeight: "100vh", background: C.ashLightest }}>
       <Header onNavigate={onNavigate} />
 
       <div style={{ maxWidth: 1280, margin: "0 auto", padding: "40px 24px", display: "flex", gap: 48 }}>
         <div style={{ flex: 1, maxWidth: 680 }}>
-          {/* Real 3-step progress stepper, confirmed from the actual page
-              markup — was entirely missing before. The real markup
-              confirms the first 2 dots use a distinct "completed" CSS
-              class from the 3rd/current dot (which also carries
-              aria-current="step"), but the actual visual distinction
-              between those two classes wasn't resolvable from HTML
-              alone (no matching CSS was available). Simplified here to
-              3 identical solid-red segments — a reasonable stand-in for
-              "fully progressed to the final step," not a claim that the
-              real page renders completed vs. current identically. */}
-          <div style={{ display: "flex", gap: 8, marginBottom: 20 }}>
-            {[0, 1, 2].map((i) => (
-              <div
-                key={i}
-                style={{
-                  flex: 1,
-                  height: 4,
-                  borderRadius: 2,
-                  background: C.red,
-                }}
-              />
-            ))}
-          </div>
-
           <h1 style={{ margin: "0 0 20px", ...type.titleMedium, color: C.ashDark }}>You're almost done!</h1>
 
           {/* Real structure: 160x160 photo (was 72x72), restaurant name as
@@ -6289,7 +6319,10 @@ function BookingScreen({ savedGoal, onNavigate }) {
               color: C.ashDark,
             }}
           >
-            We're holding this table for you for <strong>4:56 minutes</strong>
+            We're holding this table for you for{" "}
+            <strong>
+              {holdMinutes}:{holdSeconds}
+            </strong>
           </div>
 
           {/* Real: "Add a special menu" is an actual button with the
@@ -6371,19 +6404,51 @@ function BookingScreen({ savedGoal, onNavigate }) {
               "Celebration". Special request is a real textarea
               (maxlength 75, real placeholder), not a plain input. */}
           <div style={{ display: "flex", gap: 12, marginBottom: 16 }}>
-            <select
-              defaultValue=""
-              style={{ flex: 1, padding: "12px 14px", border: `1px solid ${C.ashLighter}`, borderRadius: 4, fontSize: 16, fontFamily: FONT, color: C.ash, background: C.white }}
-            >
-              <option value="" disabled>
-                Select an occasion (optional)
-              </option>
-              <option>Birthday</option>
-              <option>Anniversary</option>
-              <option>Date night</option>
-              <option>Business Meal</option>
-              <option>Celebration</option>
-            </select>
+            {/* Native select's own arrow sat flush against the box's
+                right edge with no reserved padding, so it looked
+                uncomfortably close to the border. Hiding it
+                (appearance:none) and laying a real, evenly-inset
+                ChevronDown on top instead — same visual language as
+                every other dropdown affordance in this file. */}
+            <div style={{ position: "relative", flex: 1 }}>
+              <select
+                defaultValue=""
+                style={{
+                  width: "100%",
+                  padding: "12px 40px 12px 14px",
+                  border: `1px solid ${C.ashLighter}`,
+                  borderRadius: 4,
+                  fontSize: 16,
+                  fontFamily: FONT,
+                  color: C.ash,
+                  background: C.white,
+                  appearance: "none",
+                  WebkitAppearance: "none",
+                  boxSizing: "border-box",
+                }}
+              >
+                <option value="" disabled>
+                  Select an occasion (optional)
+                </option>
+                <option>Birthday</option>
+                <option>Anniversary</option>
+                <option>Date night</option>
+                <option>Business Meal</option>
+                <option>Celebration</option>
+              </select>
+              <span
+                style={{
+                  position: "absolute",
+                  top: "50%",
+                  right: 14,
+                  transform: "translateY(-50%)",
+                  pointerEvents: "none",
+                  display: "flex",
+                }}
+              >
+                <Ic.ChevronDown size={16} color={C.ash} />
+              </span>
+            </div>
             <textarea
               placeholder="Add a special request (optional)"
               maxLength={75}
