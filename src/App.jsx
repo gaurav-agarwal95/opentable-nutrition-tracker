@@ -3,7 +3,7 @@ import React, { useState, useEffect, useRef } from "react";
 // Curated photo sets — 10 restaurant photos + 9 dish photos, cycled by index
 // (modulo) across every card instance rather than needing one unique photo
 // per card. See ImagePlaceholder's `src` prop below for how these get used.
-import searchMapImg from "./assets/map/search-map-2.jpg";
+import searchMapImg from "./assets/map/search-map.jpg";
 import restaurant1 from "./assets/restaurants/restaurant_1.jpg";
 import restaurant2 from "./assets/restaurants/restaurant_2.jpg";
 import restaurant3 from "./assets/restaurants/restaurant_3.jpg";
