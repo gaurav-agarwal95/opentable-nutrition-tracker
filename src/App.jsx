@@ -6262,36 +6262,26 @@ function BookingScreen({ savedGoal, onNavigate }) {
   const [goalAligned, setGoalAligned] = useState(null);
   const [emailOptIn, setEmailOptIn] = useState(false);
 
+  // Table-hold countdown — was static "4:56" text. Counts down from
+  // 5:00 to 0:00 once per second. State is local to this component,
+  // so it naturally starts fresh at 5:00 every time this screen
+  // mounts (first visit, or navigating away and back), with no extra
+  // reset logic needed.
+  const [secondsLeft, setSecondsLeft] = useState(300);
+  useEffect(() => {
+    if (secondsLeft <= 0) return;
+    const id = setTimeout(() => setSecondsLeft((s) => s - 1), 1000);
+    return () => clearTimeout(id);
+  }, [secondsLeft]);
+  const holdMinutes = Math.floor(secondsLeft / 60);
+  const holdSeconds = String(secondsLeft % 60).padStart(2, "0");
+
   return (
     <div style={{ fontFamily: FONT, minHeight: "100vh", background: C.ashLightest }}>
       <Header onNavigate={onNavigate} />
 
       <div style={{ maxWidth: 1280, margin: "0 auto", padding: "40px 24px", display: "flex", gap: 48 }}>
         <div style={{ flex: 1, maxWidth: 680 }}>
-          {/* Real 3-step progress stepper, confirmed from the actual page
-              markup — was entirely missing before. The real markup
-              confirms the first 2 dots use a distinct "completed" CSS
-              class from the 3rd/current dot (which also carries
-              aria-current="step"), but the actual visual distinction
-              between those two classes wasn't resolvable from HTML
-              alone (no matching CSS was available). Simplified here to
-              3 identical solid-red segments — a reasonable stand-in for
-              "fully progressed to the final step," not a claim that the
-              real page renders completed vs. current identically. */}
-          <div style={{ display: "flex", gap: 8, marginBottom: 20 }}>
-            {[0, 1, 2].map((i) => (
-              <div
-                key={i}
-                style={{
-                  flex: 1,
-                  height: 4,
-                  borderRadius: 2,
-                  background: C.red,
-                }}
-              />
-            ))}
-          </div>
-
           <h1 style={{ margin: "0 0 20px", ...type.titleMedium, color: C.ashDark }}>You're almost done!</h1>
 
           {/* Real structure: 160x160 photo (was 72x72), restaurant name as
@@ -6329,7 +6319,10 @@ function BookingScreen({ savedGoal, onNavigate }) {
               color: C.ashDark,
             }}
           >
-            We're holding this table for you for <strong>4:56 minutes</strong>
+            We're holding this table for you for{" "}
+            <strong>
+              {holdMinutes}:{holdSeconds}
+            </strong>
           </div>
 
           {/* Real: "Add a special menu" is an actual button with the
@@ -6411,19 +6404,51 @@ function BookingScreen({ savedGoal, onNavigate }) {
               "Celebration". Special request is a real textarea
               (maxlength 75, real placeholder), not a plain input. */}
           <div style={{ display: "flex", gap: 12, marginBottom: 16 }}>
-            <select
-              defaultValue=""
-              style={{ flex: 1, padding: "12px 14px", border: `1px solid ${C.ashLighter}`, borderRadius: 4, fontSize: 16, fontFamily: FONT, color: C.ash, background: C.white }}
-            >
-              <option value="" disabled>
-                Select an occasion (optional)
-              </option>
-              <option>Birthday</option>
-              <option>Anniversary</option>
-              <option>Date night</option>
-              <option>Business Meal</option>
-              <option>Celebration</option>
-            </select>
+            {/* Native select's own arrow sat flush against the box's
+                right edge with no reserved padding, so it looked
+                uncomfortably close to the border. Hiding it
+                (appearance:none) and laying a real, evenly-inset
+                ChevronDown on top instead — same visual language as
+                every other dropdown affordance in this file. */}
+            <div style={{ position: "relative", flex: 1 }}>
+              <select
+                defaultValue=""
+                style={{
+                  width: "100%",
+                  padding: "12px 40px 12px 14px",
+                  border: `1px solid ${C.ashLighter}`,
+                  borderRadius: 4,
+                  fontSize: 16,
+                  fontFamily: FONT,
+                  color: C.ash,
+                  background: C.white,
+                  appearance: "none",
+                  WebkitAppearance: "none",
+                  boxSizing: "border-box",
+                }}
+              >
+                <option value="" disabled>
+                  Select an occasion (optional)
+                </option>
+                <option>Birthday</option>
+                <option>Anniversary</option>
+                <option>Date night</option>
+                <option>Business Meal</option>
+                <option>Celebration</option>
+              </select>
+              <span
+                style={{
+                  position: "absolute",
+                  top: "50%",
+                  right: 14,
+                  transform: "translateY(-50%)",
+                  pointerEvents: "none",
+                  display: "flex",
+                }}
+              >
+                <Ic.ChevronDown size={16} color={C.ash} />
+              </span>
+            </div>
             <textarea
               placeholder="Add a special request (optional)"
               maxLength={75}
