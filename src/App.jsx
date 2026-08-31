@@ -4632,7 +4632,7 @@ function HomeScreen({ savedGoal, onNavigate, onStartConcierge }) {
           style={{
             position: "absolute",
             inset: 0,
-            background: "rgba(47,45,65,0.6)",
+            background: "rgba(47,45,65,0.68)",
           }}
         />
         <div
