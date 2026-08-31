@@ -2528,7 +2528,6 @@ function GoalModal({ initialGoal, onClose, onSave }) {
             marginBottom: selected?.hasFrequency ? 24 : 8,
           }}
         >
-          <Ic.Compass size={16} color={C.ashDark} />
           Just exploring
         </button>
 
