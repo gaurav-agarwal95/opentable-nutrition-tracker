@@ -1888,18 +1888,19 @@ function Header({ onNavigate }) {
             <span
               onClick={() => onNavigate("profile")}
               style={{
-                width: 40,
-                height: 40,
+                width: 32,
+                height: 32,
                 borderRadius: "50%",
                 background: C.avatarBlue,
                 color: C.white,
                 fontWeight: 700,
-                fontSize: 14,
+                fontSize: 12,
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
                 cursor: "pointer",
                 fontFamily: FONT,
+                flexShrink: 0,
               }}
               title="Profile"
             >
