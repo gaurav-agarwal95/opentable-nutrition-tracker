@@ -2448,6 +2448,7 @@ function GoalModal({ initialGoal, onClose, onSave }) {
   const selected = GOALS.find((g) => g.id === selectedGoal);
   const canSave = Boolean(selectedGoal);
   const [saveHovered, setSaveHovered] = useState(false);
+  const [exploringHovered, setExploringHovered] = useState(false);
 
   return (
     <div
@@ -2530,6 +2531,8 @@ function GoalModal({ initialGoal, onClose, onSave }) {
         <p style={{ margin: "0 0 8px", ...type.bodySmall, color: C.ash, fontWeight: 600 }}>Not sure yet?</p>
         <button
           onClick={() => setSelectedGoal("exploring")}
+          onMouseEnter={() => setExploringHovered(true)}
+          onMouseLeave={() => setExploringHovered(false)}
           style={{
             width: "100%",
             display: "flex",
@@ -2539,7 +2542,10 @@ function GoalModal({ initialGoal, onClose, onSave }) {
             padding: "16px 12px",
             minHeight: 56,
             borderRadius: 8,
-            border: selectedGoal === "exploring" ? `3px solid ${C.red}` : `1px solid ${C.ashLighter}`,
+            border:
+              selectedGoal === "exploring"
+                ? `3px solid ${C.red}`
+                : `1px solid ${exploringHovered ? C.red : C.ashLighter}`,
             background: C.white,
             color: C.ashDark,
             fontSize: 16,
@@ -2548,6 +2554,7 @@ function GoalModal({ initialGoal, onClose, onSave }) {
             fontFamily: FONT,
             boxSizing: "border-box",
             marginBottom: selected?.hasFrequency ? 24 : 8,
+            transition: "border-color .2s",
           }}
         >
           Just exploring
@@ -6334,6 +6341,10 @@ function BookingScreen({ savedGoal, onNavigate }) {
   const goal = savedGoal ? GOALS.find((g) => g.id === savedGoal.goalId) : null;
   const [goalAligned, setGoalAligned] = useState(null);
   const [emailOptIn, setEmailOptIn] = useState(false);
+  const [specialMenuHovered, setSpecialMenuHovered] = useState(false);
+  const [yesHovered, setYesHovered] = useState(false);
+  const [notThisTimeHovered, setNotThisTimeHovered] = useState(false);
+  const [completeHovered, setCompleteHovered] = useState(false);
 
   // Table-hold countdown — was static "4:56" text. Counts down from
   // 5:00 to 0:00 once per second. State is local to this component,
@@ -6405,6 +6416,8 @@ function BookingScreen({ savedGoal, onNavigate }) {
               Change your mind and want a special menu? It's not too late
             </p>
             <button
+              onMouseEnter={() => setSpecialMenuHovered(true)}
+              onMouseLeave={() => setSpecialMenuHovered(false)}
               style={{
                 flexShrink: 0,
                 display: "flex",
@@ -6412,17 +6425,18 @@ function BookingScreen({ savedGoal, onNavigate }) {
                 gap: 6,
                 padding: "8px 14px",
                 background: "none",
-                border: `1px solid ${C.ashLighter}`,
+                border: `1px solid ${specialMenuHovered ? C.red : C.ashLighter}`,
                 borderRadius: 4,
                 fontSize: 14,
                 fontWeight: 600,
-                color: C.ashDark,
+                color: specialMenuHovered ? C.red : C.ashDark,
                 cursor: "pointer",
                 fontFamily: FONT,
                 whiteSpace: "nowrap",
+                transition: "border-color .2s, color .2s",
               }}
             >
-              <Ic.PlusFilled size={16} color={C.ashDark} />
+              <Ic.PlusFilled size={16} color={specialMenuHovered ? C.red : C.ashDark} />
               Add a special menu
             </button>
           </div>
@@ -6559,32 +6573,42 @@ function BookingScreen({ savedGoal, onNavigate }) {
               <div style={{ display: "flex", gap: 8 }}>
                 <button
                   onClick={() => setGoalAligned(true)}
+                  onMouseEnter={() => setYesHovered(true)}
+                  onMouseLeave={() => setYesHovered(false)}
                   style={{
                     padding: "8px 20px",
                     borderRadius: 4,
-                    border: goalAligned === true ? `2px solid ${C.red}` : `1px solid ${C.ashLighter}`,
+                    border:
+                      goalAligned === true ? `2px solid ${C.red}` : `1px solid ${yesHovered ? C.red : C.ashLighter}`,
                     background: C.white,
                     color: C.ashDark,
                     fontSize: 14,
                     fontWeight: 600,
                     cursor: "pointer",
                     fontFamily: FONT,
+                    transition: "border-color .2s",
                   }}
                 >
                   Yes
                 </button>
                 <button
                   onClick={() => setGoalAligned(false)}
+                  onMouseEnter={() => setNotThisTimeHovered(true)}
+                  onMouseLeave={() => setNotThisTimeHovered(false)}
                   style={{
                     padding: "8px 20px",
                     borderRadius: 4,
-                    border: goalAligned === false ? `2px solid ${C.red}` : `1px solid ${C.ashLighter}`,
+                    border:
+                      goalAligned === false
+                        ? `2px solid ${C.red}`
+                        : `1px solid ${notThisTimeHovered ? C.red : C.ashLighter}`,
                     background: C.white,
                     color: C.ashDark,
                     fontSize: 14,
                     fontWeight: 600,
                     cursor: "pointer",
                     fontFamily: FONT,
+                    transition: "border-color .2s",
                   }}
                 >
                   Not this time
@@ -6605,10 +6629,12 @@ function BookingScreen({ savedGoal, onNavigate }) {
 
           <button
             onClick={() => onNavigate("home")}
+            onMouseEnter={() => setCompleteHovered(true)}
+            onMouseLeave={() => setCompleteHovered(false)}
             style={{
               width: "100%",
               padding: "14px 0",
-              background: C.red,
+              background: completeHovered ? C.redLight : C.red,
               color: C.white,
               border: "none",
               borderRadius: 4,
@@ -6616,6 +6642,7 @@ function BookingScreen({ savedGoal, onNavigate }) {
               fontWeight: 600,
               cursor: "pointer",
               fontFamily: FONT,
+              transition: "background .15s",
             }}
           >
             Complete reservation
