@@ -6630,6 +6630,15 @@ export default function App() {
     setScreen("concierge");
   };
 
+  // Screens are swapped via state, not real page navigation, so the
+  // browser never resets scroll position on its own — without this,
+  // arriving on a new screen kept whatever scroll offset the previous
+  // one was left at (e.g. landing mid-page on Search Results after
+  // scrolling down on the Homepage first).
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [screen]);
+
   return (
     <div>
       {screen === "home" && <HomeScreen savedGoal={savedGoal} onNavigate={setScreen} onStartConcierge={startConcierge} />}
