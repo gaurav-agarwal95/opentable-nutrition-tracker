@@ -3101,6 +3101,27 @@ function ActivityLogScreen({ savedGoal, onNavigate }) {
 
       <div style={{ maxWidth: 1280, margin: "0 auto", padding: "40px 24px", display: "flex", gap: 48 }}>
         <div style={{ flex: 1 }}>
+          {/* Back nav — Activity log is a drilldown from the Nutrition
+              Goals dashboard (reached via its "Goal activity" link), so
+              it needs a way back rather than dead-ending here. */}
+          <span
+            onClick={() => onNavigate("dashboard")}
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 4,
+              marginBottom: 12,
+              cursor: "pointer",
+              color: C.ash,
+              fontSize: 14,
+              fontWeight: 600,
+            }}
+          >
+            <span style={{ display: "flex", transform: "rotate(180deg)" }}>
+              <Ic.ChevronRight size={16} color={C.ash} />
+            </span>
+            Nutrition Goals
+          </span>
           <h1 style={{ margin: 0, ...type.titleLarge, color: C.ashDark, fontSize: 28, lineHeight: "34px" }}>
             Goal activity
           </h1>
