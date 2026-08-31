@@ -1642,13 +1642,13 @@ const Ic = {
   Compass: ({ size = 18, color = C.ashDark }) => (
     <svg width={size} height={size} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
       <path
-        d="M3 11a8 8 0 1 1 16 0 8 8 0 0 1-16 0Zm8-10v2M11 21v2M1 11h2M19 11h2"
+        d="M4 12a8 8 0 1 1 16 0 8 8 0 0 1-16 0ZM12 1v2M12 21v2M1 12h2M21 12h2"
         fill="none"
         stroke={color}
         strokeWidth="1.6"
         strokeLinecap="round"
       />
-      <path d="m14 8-4 4 4 4 4-4Z" fill={color} />
+      <path d="m12 8-4 4 4 4 4-4Z" fill={color} />
     </svg>
   ),
   Expand: ({ size = 16, color = C.ashDark }) => (
