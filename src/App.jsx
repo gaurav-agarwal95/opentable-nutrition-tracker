@@ -5490,6 +5490,26 @@ function getConciergeResult(query) {
    uncertain CSS attribution. */
 function ConciergeInput({ value, onChange, onSend, placeholder, autoFocus }) {
   const canSend = value.trim().length > 0;
+  const textareaRef = useRef(null);
+  const LINE_HEIGHT = 24;
+  const MAX_LINES = 2;
+
+  // Auto-grow the textarea with its content, capped at 2 lines — only
+  // once text actually wraps past that does it start scrolling (and
+  // show scrollbar/step arrows). Previously the box was a fixed 24px
+  // (1 line) with default textarea overflow, so the browser's native
+  // scroll arrows could appear even at 0-1 lines from sub-pixel
+  // scrollHeight rounding, not just genuine 2-line overflow.
+  useEffect(() => {
+    const el = textareaRef.current;
+    if (!el) return;
+    el.style.height = "auto";
+    const maxHeight = LINE_HEIGHT * MAX_LINES;
+    const next = Math.min(el.scrollHeight, maxHeight);
+    el.style.height = `${next}px`;
+    el.style.overflowY = el.scrollHeight > maxHeight ? "auto" : "hidden";
+  }, [value]);
+
   return (
     <div
       style={{
@@ -5515,6 +5535,7 @@ function ConciergeInput({ value, onChange, onSend, placeholder, autoFocus }) {
         .concierge-input-textarea::placeholder { font-weight: 400; }
       `}</style>
       <textarea
+        ref={textareaRef}
         value={value}
         autoFocus={autoFocus}
         className="concierge-input-textarea"
@@ -5529,18 +5550,20 @@ function ConciergeInput({ value, onChange, onSend, placeholder, autoFocus }) {
         rows={1}
         style={{
           width: "100%",
-          height: 24,
+          height: LINE_HEIGHT,
           resize: "none",
           border: "none",
           margin: "12px 64px 12px 20px",
+          padding: 0,
           outline: "none",
-          lineHeight: "24px",
+          lineHeight: `${LINE_HEIGHT}px`,
           fontSize: 16,
           fontWeight: 500,
           color: C.ashDark,
           fontFamily: FONT,
           boxSizing: "border-box",
           background: "transparent",
+          overflowY: "hidden",
         }}
       />
       <button
