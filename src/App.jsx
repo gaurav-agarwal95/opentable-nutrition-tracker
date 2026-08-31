@@ -4648,11 +4648,13 @@ const DEFAULT_PROMPTS = [
   "Where's a good, relaxed spot for a first date?",
 ];
 
-function HomeScreen({ savedGoal, onNavigate, onStartConcierge }) {
+function HomeScreen({ savedGoal, onNavigate, onStartConcierge, onSearch }) {
   const goal = savedGoal ? GOALS.find((g) => g.id === savedGoal.goalId) : null;
   const showGoalPrompt = goal && GOAL_PROMPT[goal.id];
   const dishes = goal && GOAL_DISHES[goal.id] ? GOAL_DISHES[goal.id] : null;
   const [letsGoHovered, setLetsGoHovered] = useState(false);
+  const [searchInput, setSearchInput] = useState("");
+  const goToSearch = () => onSearch(searchInput);
 
   return (
     <div style={{ fontFamily: FONT, minHeight: "100vh", background: C.white }}>
@@ -4803,12 +4805,28 @@ function HomeScreen({ savedGoal, onNavigate, onStartConcierge }) {
               }}
             >
               <Ic.SearchInput size={18} color={C.ashDark} />
-              <span style={{ fontSize: 14, fontWeight: 400, color: C.ashLight }}>
-                Location, Restaurant, or Cuisine
-              </span>
+              <input
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") goToSearch();
+                }}
+                placeholder="Location, Restaurant, or Cuisine"
+                style={{
+                  flex: 1,
+                  minWidth: 0,
+                  border: "none",
+                  outline: "none",
+                  background: "transparent",
+                  fontSize: 14,
+                  fontWeight: 400,
+                  color: C.ashDark,
+                  fontFamily: FONT,
+                }}
+              />
             </div>
             <button
-              onClick={() => onNavigate("search")}
+              onClick={goToSearch}
               onMouseEnter={() => setLetsGoHovered(true)}
               onMouseLeave={() => setLetsGoHovered(false)}
               style={{
@@ -5957,7 +5975,7 @@ function ConciergeScreen({ initialQuery, onNavigate }) {
   );
 }
 
-function SearchResultsScreen({ savedGoal, onNavigate }) {
+function SearchResultsScreen({ savedGoal, onNavigate, query }) {
   const goal = savedGoal ? GOALS.find((g) => g.id === savedGoal.goalId) : null;
   const [filterOpen, setFilterOpen] = useState(false);
   const [sortOpen, setSortOpen] = useState(false);
@@ -5965,7 +5983,7 @@ function SearchResultsScreen({ savedGoal, onNavigate }) {
   const [goalFilterChecked, setGoalFilterChecked] = useState(false);
   const [featuredHovered, setFeaturedHovered] = useState(false);
   const [filterHovered, setFilterHovered] = useState(false);
-  const searchTerm = "italian";
+  const searchTerm = query || "italian";
 
   return (
     <div style={{ fontFamily: FONT, minHeight: "100vh", background: C.white }}>
@@ -6685,6 +6703,21 @@ export default function App() {
     setScreen("concierge");
   };
 
+  // Homepage "Location, Restaurant, or Cuisine" field was a static
+  // styled placeholder, not a real input — whatever the user typed
+  // never reached Search Results, which always showed the same
+  // hardcoded "italian" query regardless. Now a real controlled
+  // input; "Let's go" carries its value through to Search Results.
+  // Falls back to "italian" for a blank search and for every other
+  // entry point into Search Results that doesn't set a query (e.g.
+  // Dashboard's "Find a goal-aligned table near you"), preserving
+  // the screen's previous always-has-a-query behavior.
+  const [searchQuery, setSearchQuery] = useState("italian");
+  const startSearch = (text) => {
+    setSearchQuery(text && text.trim() ? text.trim() : "italian");
+    setScreen("search");
+  };
+
   // Screens are swapped via state, not real page navigation, so the
   // browser never resets scroll position on its own — without this,
   // arriving on a new screen kept whatever scroll offset the previous
@@ -6696,7 +6729,9 @@ export default function App() {
 
   return (
     <div>
-      {screen === "home" && <HomeScreen savedGoal={savedGoal} onNavigate={setScreen} onStartConcierge={startConcierge} />}
+      {screen === "home" && (
+        <HomeScreen savedGoal={savedGoal} onNavigate={setScreen} onStartConcierge={startConcierge} onSearch={startSearch} />
+      )}
       {screen === "profile" && (
         <ProfilePage savedGoal={savedGoal} onOpenGoalModal={() => setModalOpen(true)} onNavigate={setScreen} />
       )}
@@ -6705,7 +6740,7 @@ export default function App() {
       )}
       {screen === "activity" && <ActivityLogScreen savedGoal={savedGoal} onNavigate={setScreen} />}
       {screen === "settings" && <SettingsScreen savedGoal={savedGoal} onNavigate={setScreen} />}
-      {screen === "search" && <SearchResultsScreen savedGoal={savedGoal} onNavigate={setScreen} />}
+      {screen === "search" && <SearchResultsScreen savedGoal={savedGoal} onNavigate={setScreen} query={searchQuery} />}
       {screen === "booking" && <BookingScreen savedGoal={savedGoal} onNavigate={setScreen} />}
       {screen === "concierge" && (
         <ConciergeScreen
