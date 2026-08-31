@@ -5255,36 +5255,8 @@ function MapPlaceholder() {
         }}
       >
       {pins.map((p, i) => (
-        <span
-          key={i}
-          style={{
-            position: "absolute",
-            left: p.left,
-            top: p.top,
-            transform: "translate(-50%,-100%)",
-            width: 22,
-            height: 22,
-            display: "block",
-          }}
-        >
-          {/* Tinted backdrop so the red pin doesn't disappear into
-              similarly-colored map roads/highways behind it — a soft
-              dark circle sitting between the map image and the pin,
-              roughly matching the pin's rounded head. */}
-          <span
-            style={{
-              position: "absolute",
-              top: -3,
-              left: -3,
-              width: 22,
-              height: 22,
-              borderRadius: "50%",
-              background: "rgba(0,0,0,0.32)",
-            }}
-          />
-          <span style={{ position: "relative", display: "block" }}>
-            <Ic.Pin size={22} />
-          </span>
+        <span key={i} style={{ position: "absolute", left: p.left, top: p.top, transform: "translate(-50%,-100%)" }}>
+          <Ic.Pin size={22} />
         </span>
       ))}
       <div
