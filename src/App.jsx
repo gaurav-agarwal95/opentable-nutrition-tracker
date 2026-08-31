@@ -2355,14 +2355,17 @@ function Checkbox({ checked }) {
    CHIP — exact selector pattern per design-system §4.3
 --------------------------------------------------------------------------- */
 function Chip({ label, selected, onClick }) {
+  const [hovered, setHovered] = useState(false);
   return (
     <button
       onClick={onClick}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
       style={{
         padding: "16px 12px",
         minHeight: 56,
         borderRadius: 8,
-        border: selected ? `3px solid ${C.red}` : `1px solid ${C.ashLighter}`,
+        border: selected ? `3px solid ${C.red}` : `1px solid ${hovered ? C.red : C.ashLighter}`,
         background: C.white,
         color: C.ashDark,
         fontSize: 16,
@@ -2372,6 +2375,7 @@ function Chip({ label, selected, onClick }) {
         fontFamily: FONT,
         boxSizing: "border-box",
         whiteSpace: "nowrap",
+        transition: "border-color .2s",
       }}
     >
       {label}
@@ -2383,27 +2387,41 @@ function Chip({ label, selected, onClick }) {
    STEPPER — flagged new control, see header comment
 --------------------------------------------------------------------------- */
 function Stepper({ value, onChange, min = 1, max = 30 }) {
+  const [decHovered, setDecHovered] = useState(false);
+  const [incHovered, setIncHovered] = useState(false);
   return (
     <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-      <button onClick={() => onChange(Math.max(min, value - 1))} aria-label="Decrease" style={stepperBtnStyle}>
+      <button
+        onClick={() => onChange(Math.max(min, value - 1))}
+        onMouseEnter={() => setDecHovered(true)}
+        onMouseLeave={() => setDecHovered(false)}
+        aria-label="Decrease"
+        style={stepperBtnStyle(decHovered)}
+      >
         &#8722;
       </button>
       <span style={{ fontSize: 20, fontWeight: 700, color: C.ashDark, minWidth: 24, textAlign: "center" }}>
         {value}
       </span>
-      <button onClick={() => onChange(Math.min(max, value + 1))} aria-label="Increase" style={stepperBtnStyle}>
+      <button
+        onClick={() => onChange(Math.min(max, value + 1))}
+        onMouseEnter={() => setIncHovered(true)}
+        onMouseLeave={() => setIncHovered(false)}
+        aria-label="Increase"
+        style={stepperBtnStyle(incHovered)}
+      >
         &#43;
       </button>
     </div>
   );
 }
-const stepperBtnStyle = {
+const stepperBtnStyle = (hovered) => ({
   width: 36,
   height: 36,
   borderRadius: 4,
-  border: `1px solid ${C.ashLighter}`,
+  border: `1px solid ${hovered ? C.red : C.ashLighter}`,
   background: C.white,
-  color: C.ashDark,
+  color: hovered ? C.red : C.ashDark,
   fontSize: 18,
   fontWeight: 700,
   cursor: "pointer",
@@ -2412,7 +2430,8 @@ const stepperBtnStyle = {
   justifyContent: "center",
   lineHeight: 1,
   fontFamily: FONT,
-};
+  transition: "border-color .2s, color .2s",
+});
 
 /* ---------------------------------------------------------------------------
    GOAL-SETUP MODAL — reuses exact chip-modal chrome per design-system §4.3/§5
@@ -2428,6 +2447,7 @@ function GoalModal({ initialGoal, onClose, onSave }) {
 
   const selected = GOALS.find((g) => g.id === selectedGoal);
   const canSave = Boolean(selectedGoal);
+  const [saveHovered, setSaveHovered] = useState(false);
 
   return (
     <div
@@ -2561,11 +2581,13 @@ function GoalModal({ initialGoal, onClose, onSave }) {
         <button
           disabled={!canSave}
           onClick={() => canSave && onSave({ goalId: selectedGoal, frequency: selected?.hasFrequency ? frequency : null })}
+          onMouseEnter={() => setSaveHovered(true)}
+          onMouseLeave={() => setSaveHovered(false)}
           style={{
             width: "100%",
             padding: "14px 0",
             marginTop: 8,
-            background: canSave ? C.red : C.ashLighter,
+            background: canSave ? (saveHovered ? C.redLight : C.red) : C.ashLighter,
             color: canSave ? C.white : C.ashLight,
             border: "none",
             borderRadius: 4,
@@ -2573,6 +2595,7 @@ function GoalModal({ initialGoal, onClose, onSave }) {
             fontWeight: 600,
             cursor: canSave ? "pointer" : "default",
             fontFamily: FONT,
+            transition: "background .15s",
           }}
         >
           Save
@@ -2699,9 +2722,12 @@ function ProgressBar({ value, max }) {
    Selected state uses the same red-border convention as chips (§4.3).
 --------------------------------------------------------------------------- */
 function FilterPill({ label, active, onClick }) {
+  const [hovered, setHovered] = useState(false);
   return (
     <button
       onClick={onClick}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
       style={{
         display: "flex",
         alignItems: "center",
@@ -2709,13 +2735,14 @@ function FilterPill({ label, active, onClick }) {
         borderRadius: 32,
         padding: "4px 16px",
         background: C.white,
-        border: active ? `2px solid ${C.red}` : `1px solid ${C.ashLighter}`,
+        border: active ? `2px solid ${C.red}` : `1px solid ${hovered ? C.red : C.ashLighter}`,
         fontSize: 16,
         fontWeight: 500,
         lineHeight: "24px",
         color: C.ashDark,
         cursor: "pointer",
         fontFamily: FONT,
+        transition: "border-color .2s",
       }}
     >
       {label}
@@ -2777,6 +2804,7 @@ function WaysTile({ icon, title, description, ctaLabel, onCtaClick }) {
 --------------------------------------------------------------------------- */
 function DashboardScreen({ savedGoal, onNavigate, onOpenGoalModal }) {
   const goal = savedGoal ? GOALS.find((g) => g.id === savedGoal.goalId) : null;
+  const [activityLinkHovered, setActivityLinkHovered] = useState(false);
 
   return (
     <div style={{ fontFamily: FONT, minHeight: "100vh", background: C.ashLightest }}>
@@ -3058,6 +3086,8 @@ function DashboardScreen({ savedGoal, onNavigate, onOpenGoalModal }) {
 
             <div
               onClick={() => onNavigate("activity")}
+              onMouseEnter={() => setActivityLinkHovered(true)}
+              onMouseLeave={() => setActivityLinkHovered(false)}
               style={{
                 display: "flex",
                 alignItems: "center",
@@ -3066,8 +3096,10 @@ function DashboardScreen({ savedGoal, onNavigate, onOpenGoalModal }) {
                 width: "fit-content",
               }}
             >
-              <span style={{ ...type.titleSmall, color: C.ashDark }}>Goal activity</span>
-              <Ic.ChevronRight size={20} />
+              <span style={{ ...type.titleSmall, color: activityLinkHovered ? C.red : C.ashDark, transition: "color .15s" }}>
+                Goal activity
+              </span>
+              <Ic.ChevronRight size={20} color={activityLinkHovered ? C.red : C.ashDark} />
             </div>
           </>
         )}
@@ -4620,6 +4652,7 @@ function HomeScreen({ savedGoal, onNavigate, onStartConcierge }) {
   const goal = savedGoal ? GOALS.find((g) => g.id === savedGoal.goalId) : null;
   const showGoalPrompt = goal && GOAL_PROMPT[goal.id];
   const dishes = goal && GOAL_DISHES[goal.id] ? GOAL_DISHES[goal.id] : null;
+  const [letsGoHovered, setLetsGoHovered] = useState(false);
 
   return (
     <div style={{ fontFamily: FONT, minHeight: "100vh", background: C.white }}>
@@ -4776,11 +4809,13 @@ function HomeScreen({ savedGoal, onNavigate, onStartConcierge }) {
             </div>
             <button
               onClick={() => onNavigate("search")}
+              onMouseEnter={() => setLetsGoHovered(true)}
+              onMouseLeave={() => setLetsGoHovered(false)}
               style={{
                 height: 40,
                 minWidth: 120,
                 padding: "0 24px",
-                background: C.red,
+                background: letsGoHovered ? C.redLight : C.red,
                 color: C.white,
                 border: "none",
                 borderRadius: 4,
@@ -4789,6 +4824,7 @@ function HomeScreen({ savedGoal, onNavigate, onStartConcierge }) {
                 cursor: "pointer",
                 fontFamily: FONT,
                 boxShadow: "0 2px 4px rgba(0,0,0,0.2)",
+                transition: "background .15s",
               }}
             >
               Let's go
