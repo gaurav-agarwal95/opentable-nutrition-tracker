@@ -4107,15 +4107,39 @@ function DishCard({ dish, index = 0 }) {
    TIME SLOT PILL — exact CSS from location-landing (§4.9): 70px wide,
    32px tall, red fill, 4px radius, 14px/700 white text.
 --------------------------------------------------------------------------- */
-function TimeSlotPill({ time }) {
+/* Real markup: <a role="button" aria-label="8:30 AM Reserve table at
+   X restaurant">, with a :hover rule swapping background to
+   --otkit-color-background-action-hover — confirmed via direct
+   inspection to resolve to the same hex as --otkit-color-red-light
+   (already in this file's palette as C.redLight), so hover LIGHTENS
+   the pill rather than darkening it. Hover handled via
+   onMouseEnter/Leave state since inline styles can't express :hover
+   directly (same convention as every other hover effect in this
+   file). role="button" + tabIndex + onKeyDown reproduce the real
+   element's keyboard-operability, since this renders as a <span>,
+   not a real <a>/<button>. */
+function TimeSlotPill({ time, restaurantName, onClick }) {
+  const [hovered, setHovered] = useState(false);
   return (
     <span
+      role="button"
+      tabIndex={0}
+      onClick={onClick}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          onClick?.();
+        }
+      }}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      aria-label={`${time} Reserve table at ${restaurantName}`}
       style={{
         width: 70,
         height: 32,
         lineHeight: "32px",
         textAlign: "center",
-        background: C.red,
+        background: hovered ? C.redLight : C.red,
         color: C.white,
         borderRadius: 4,
         fontSize: 14,
@@ -4123,6 +4147,7 @@ function TimeSlotPill({ time }) {
         cursor: "pointer",
         fontFamily: FONT,
         display: "inline-block",
+        transition: "background .15s",
       }}
     >
       {time}
@@ -4245,9 +4270,7 @@ function RestaurantCard({ name, rating, reviews, meta, bookedToday, times, goalA
               240 ≥ 226 with real margin to spare) and restored the true
               8px gap instead of compressing it away from its real value. */}
           {times.map((t) => (
-            <span key={t} onClick={() => onNavigate("booking")}>
-              <TimeSlotPill time={t} />
-            </span>
+            <TimeSlotPill key={t} time={t} restaurantName={name} onClick={() => onNavigate("booking")} />
           ))}
         </div>
       </div>
@@ -5187,9 +5210,7 @@ function SearchResultCard({ r, goal, onNavigate, index = 0 }) {
         <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: r.promo ? 8 : 0 }}>
           {r.times.map((t) => (
             <div key={t} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 2 }}>
-              <span onClick={() => onNavigate("booking")}>
-                <TimeSlotPill time={t} />
-              </span>
+              <TimeSlotPill time={t} restaurantName={r.name} onClick={() => onNavigate("booking")} />
               {r.points && <span style={{ fontSize: 11, color: C.teal, fontWeight: 600 }}>+1,000 pts</span>}
             </div>
           ))}
@@ -5661,9 +5682,7 @@ function ConciergeRestaurantCard({ r, onNavigate, index = 0 }) {
         <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 8 }}>
           {r.times.map((t, i) =>
             t ? (
-              <span key={i} onClick={() => onNavigate("booking")}>
-                <TimeSlotPill time={t} />
-              </span>
+              <TimeSlotPill key={i} time={t} restaurantName={r.name} onClick={() => onNavigate("booking")} />
             ) : (
               <span
                 key={i}
