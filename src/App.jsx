@@ -3,6 +3,7 @@ import React, { useState, useEffect, useRef } from "react";
 // Curated photo sets — 10 restaurant photos + 9 dish photos, cycled by index
 // (modulo) across every card instance rather than needing one unique photo
 // per card. See ImagePlaceholder's `src` prop below for how these get used.
+import searchMapImg from "./assets/map/search-map.jpg";
 import restaurant1 from "./assets/restaurants/restaurant_1.jpg";
 import restaurant2 from "./assets/restaurants/restaurant_2.jpg";
 import restaurant3 from "./assets/restaurants/restaurant_3.jpg";
@@ -5204,11 +5205,11 @@ function SearchResultCard({ r, goal, onNavigate, index = 0 }) {
   );
 }
 
-/* FLAGGED PLACEHOLDER — no real map integration; hatched background
-   matching the same "obvious stand-in" convention as ImagePlaceholder,
-   with hand-drawn pin icons at rough scattered positions (not tied to
-   real coordinates) and non-functional zoom/locate/expand controls
-   included only for visual completeness. */
+/* Still no real map integration — background is a static Google Maps
+   screenshot (src/assets/map/search-map.jpg) standing in for a live
+   map, with hand-drawn pin icons at rough scattered positions (not
+   tied to real coordinates) and non-functional zoom/locate/expand
+   controls included only for visual completeness. */
 function MapPlaceholder() {
   const pins = [
     { left: "30%", top: "20%" },
@@ -5248,24 +5249,11 @@ function MapPlaceholder() {
           height: "100%",
           borderRadius: 8,
           overflow: "hidden",
-          background: "repeating-linear-gradient(45deg, #e8eef0, #e8eef0 14px, #dde6e9 14px, #dde6e9 28px)",
+          backgroundImage: `url(${searchMapImg})`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
         }}
       >
-      <span
-        style={{
-          position: "absolute",
-          top: 12,
-          left: 12,
-          background: C.white,
-          padding: "6px 10px",
-          borderRadius: 4,
-          fontSize: 11,
-          color: C.ash,
-          boxShadow: "0 2px 4px rgba(45,51,63,0.2)",
-        }}
-      >
-        [map placeholder — no real map integration]
-      </span>
       {pins.map((p, i) => (
         <span key={i} style={{ position: "absolute", left: p.left, top: p.top, transform: "translate(-50%,-100%)" }}>
           <Ic.Pin size={22} />
