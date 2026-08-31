@@ -5685,6 +5685,11 @@ function ConciergeRestaurantCard({ r, onNavigate, index = 0 }) {
 function ConciergeScreen({ initialQuery, onNavigate }) {
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(false);
+  // The just-sent query, shown immediately as its own bubble while the
+  // response is still loading — without this, the user's prompt only
+  // appeared once the (delayed) response arrived alongside it, so
+  // nothing showed on screen during "Prepping a response...".
+  const [pendingQuery, setPendingQuery] = useState(null);
   const [inputValue, setInputValue] = useState("");
   const [feedback, setFeedback] = useState({});
   const startedRef = useRef(false);
@@ -5693,11 +5698,13 @@ function ConciergeScreen({ initialQuery, onNavigate }) {
   function sendMessage(text) {
     if (!text || !text.trim()) return;
     setInputValue("");
+    setPendingQuery(text);
     setLoading(true);
     setTimeout(() => {
       const result = getConciergeResult(text);
       setMessages((prev) => [...prev, { query: text, ...result }]);
       setLoading(false);
+      setPendingQuery(null);
     }, 1800);
   }
 
@@ -5849,9 +5856,29 @@ function ConciergeScreen({ initialQuery, onNavigate }) {
               </div>
             ))}
             {loading && (
-              <div style={{ display: "flex", alignItems: "center", gap: 8, color: C.ash, padding: "8px 0" }}>
-                <ConciergeLoader size={32} />
-                <span style={{ fontSize: 14 }}>Prepping a response...</span>
+              <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+                <p
+                  style={{
+                    margin: 0,
+                    color: C.ashDark,
+                    padding: "8px 12px",
+                    borderRadius: 8,
+                    background: C.ashLightest,
+                    lineHeight: "24px",
+                    fontWeight: 400,
+                    fontSize: 16,
+                    maxWidth: "70%",
+                    width: "fit-content",
+                    alignSelf: "flex-end",
+                    wordBreak: "break-word",
+                  }}
+                >
+                  {pendingQuery}
+                </p>
+                <div style={{ display: "flex", alignItems: "center", gap: 8, color: C.ash, padding: "8px 0" }}>
+                  <ConciergeLoader size={32} />
+                  <span style={{ fontSize: 14 }}>Prepping a response...</span>
+                </div>
               </div>
             )}
           </div>
