@@ -4150,7 +4150,7 @@ function TimeSlotPill({ time }) {
    read as a distinct "goal" signal rather than a label. Same copy as
    Search Results ("Great fit for your goal") for message consistency,
    even though the visual container differs. */
-function RestaurantCard({ name, rating, reviews, meta, bookedToday, times, goalAligned, index = 0 }) {
+function RestaurantCard({ name, rating, reviews, meta, bookedToday, times, goalAligned, index = 0, onNavigate }) {
   const [hovered, setHovered] = useState(false);
   return (
     <div
@@ -4245,7 +4245,7 @@ function RestaurantCard({ name, rating, reviews, meta, bookedToday, times, goalA
               240 ≥ 226 with real margin to spare) and restored the true
               8px gap instead of compressing it away from its real value. */}
           {times.map((t) => (
-            <span key={t} onClick={() => {}}>
+            <span key={t} onClick={() => onNavigate("booking")}>
               <TimeSlotPill time={t} />
             </span>
           ))}
@@ -4790,7 +4790,7 @@ function HomeScreen({ savedGoal, onNavigate, onStartConcierge }) {
         <div style={{ marginBottom: 40 }}>
           <ScrollCarousel>
             {BOOK_TODAY_RESTAURANTS.map((r, i) => (
-              <RestaurantCard key={r.name} {...r} index={i} goalAligned={Boolean(goal && r.goalAligned)} />
+              <RestaurantCard key={r.name} {...r} index={i} goalAligned={Boolean(goal && r.goalAligned)} onNavigate={onNavigate} />
             ))}
           </ScrollCarousel>
         </div>
